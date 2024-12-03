@@ -1,0 +1,53 @@
+# Test your FastAPI endpoints
+
+GET http://127.0.0.1:8000/
+Accept: application/json
+
+###
+
+POST http://127.0.0.1:8000/auth/reg/
+Content-Type: application/json
+
+{
+  "email": "bebrP13wwwIP2a@yandex.ru",
+  "password": "12345678",
+  "username": "kamala harris",
+  "birth_date": "2024-11-21"
+}
+
+
+###
+
+POST http://127.0.0.1:8000/auth/login/
+Content-Type: application/json
+
+{
+  "email": "bebrP13wwwIP2a@yandex.ru",
+  "password": "12345678"
+}
+
+
+###
+
+GET http://127.0.0.1:8000/personal/dashboard/
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZWJyUDEzd3d3SVAyYUB5YW5kZXgucnUiLCJleHAiOjE3MzMxMDE0NDJ9.G21toHNfVnlOI1fsHG0G2-1co9ytWx4lx6uZHO6SKj4
+
+
+###
+
+POST http://127.0.0.1:8000/activity/start/
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZWJyUDEzd3d3SVAyYUB5YW5kZXgucnUiLCJleHAiOjE3MzMxMDE0NDJ9.G21toHNfVnlOI1fsHG0G2-1co9ytWx4lx6uZHO6SKj4
+Content-Type: application/json
+
+{
+  "activity_type": "run"
+}
+
+###
+
+POST http://127.0.0.1:8000/activity/end/
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiZWJyUDEzd3d3SVAyYUB5YW5kZXgucnUiLCJleHAiOjE3MzMxMDE0NDJ9.G21toHNfVnlOI1fsHG0G2-1co9ytWx4lx6uZHO6SKj4
+Content-Type: application/json
+
+
+###
