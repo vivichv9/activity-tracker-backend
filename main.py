@@ -32,6 +32,7 @@ app.include_router(dashboard_router.router, prefix="/personal", tags=["personal"
 app.include_router(activity_router.router, prefix="/activity", tags=["dashboard"])
 app.include_router(friend_router.router, prefix="/friend", tags=["friend"])
 
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the FastAPI application!"}

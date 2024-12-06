@@ -10,6 +10,7 @@ class DashboardResponse(BaseModel):
     last_activities: Any
     achievements: Any
     friends: Any
+    active_train: str
 
 
 class StartActivityRequest(BaseModel):

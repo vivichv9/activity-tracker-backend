@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "mai-ml-cp-backend"
+name = "activity-tracker"
 version = "0.1.0"
 description = ""
 authors = ["Kirill Efimenko <vivichv9@yandex.ru>"]
-readme = "README.md"
+readme = ""
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -14,6 +14,7 @@ bcrypt = "^4.2.1"
 pyjwt = "^2.10.1"
 python-dotenv = "^1.0.1"
 email-validator = "^2.2.0"
+uvicorn = "^0.32.1"
 
 
 [build-system]

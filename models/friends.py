@@ -1,10 +1,10 @@
-from typing import List
+from typing import List, Any
 
 from pydantic import BaseModel
 
 
 class FriendListResponse(BaseModel):
-    friends: List[str]
+    friends: Any
 
 
 class FriendRequest(BaseModel):
@@ -13,3 +13,7 @@ class FriendRequest(BaseModel):
 
 class FriendResponse(BaseModel):
     username: str
+
+
+class FriendOrdersRepsonse(BaseModel):
+    orders: List

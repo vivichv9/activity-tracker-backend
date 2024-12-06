@@ -19,7 +19,7 @@ async def get_user_achievements_by_id(db, user_id, limit):
 
 async def get_user_activities_by_id(db, user_id, limit):
     user_activities_q = """
-        SELECT type
+        SELECT type, start_time, end_time, burned_calories
         FROM user_activities JOIN activities USING (activity_id)
         WHERE user_id = :user_id
         LIMIT :limit
@@ -27,11 +27,11 @@ async def get_user_activities_by_id(db, user_id, limit):
 
     user_activities = await db.fetch_all(user_activities_q, {"user_id": user_id,
                                                              "limit": limit})
-    activities = []
-    if user_activities is not None:
-        activities = [activity['type'] for activity in user_activities]
+    # activities = []
+    # if user_activities is not None:
+    #     activities = [activity['type'] + '\t\t' + str(activity['start_time']) for activity in user_activities]
 
-    return activities
+    return user_activities
 
 
 async def get_user_friends_by_id(db, user_id, limit):
@@ -39,25 +39,42 @@ async def get_user_friends_by_id(db, user_id, limit):
         WITH get_deleted AS (
             SELECT friendships.friend_id
             FROM friendships
-            WHERE friendships.user_id = :user_id AND status = 'deleted'
+            WHERE (friendships.user_id = :user_id OR friendships.friend_id = :user_id) AND status = 'deleted'
         ), get_id AS (
             SELECT friendships.friend_id
             FROM friendships
-            WHERE friendships.user_id = :user_id AND
+            WHERE (friendships.user_id = :user_id OR friendships.friend_id = :user_id) AND
             friend_id NOT IN (SELECT friend_id FROM get_deleted) AND
             status = 'confirmed'
         )
         
-        SELECT username FROM users 
+        SELECT username, points_amount FROM users JOIN user_points USING(user_id) 
         WHERE user_id IN (SELECT friend_id FROM get_id)
         LIMIT :limit
     """
 
-    user_friends = await db.fetch_all(get_friends_q, {"user_id": user_id,
+    q = """
+        WITH subq AS (
+            SELECT user_id, friend_id
+            FROM friendships
+            WHERE status = 'confirmed' AND (user_id = :user_id OR friend_id = :user_id)
+        ), subq_1 AS (
+            SELECT user_id FROM subq
+            WHERE user_id != :user_id
+            UNION
+            SELECT friend_id AS user_id FROM subq
+            WHERE friend_id != :user_id
+            LIMIT :limit
+        )
+
+        SELECT users.username, user_points.points_amount  FROM users JOIN subq_1 USING(user_id) JOIN user_points USING(user_id)
+    """
+
+    user_friends = await db.fetch_all(q, {"user_id": user_id,
                                                       "limit": limit})
     friends = []
     if user_friends is not None:
-        friends = [friend['username'] for friend in user_friends]
+        friends = [(friend['username'], friend['points_amount']) for friend in user_friends]
 
     return friends
 
@@ -220,3 +237,22 @@ async def end_user_activity(db, user_id):
                                          "new_count": int(q_stat['activities_count']) + 1})
 
         return cals_burned, duration
+
+
+async def get_current_train(db, user_id):
+    get_train_q = """
+        WITH suubq AS (
+            SELECT activity_id
+            FROM user_activities
+            WHERE user_id = :user_id AND end_time IS NULL
+        )
+        SELECT type FROM activities
+        where activity_id = (SELECT activity_id FROM suubq)
+    """
+
+    active_train = await db.fetch_one(get_train_q, {"user_id": user_id})
+
+    if active_train is None:
+        return "Нет активности"
+
+    return active_train['type']
